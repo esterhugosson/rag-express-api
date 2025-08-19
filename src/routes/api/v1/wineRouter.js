@@ -19,3 +19,9 @@ router.get('/price-vs-points', tryCatch(controller.getPriceVsPoints.bind(control
 router.get('/top-varieties', tryCatch(controller.getTopVarieties.bind(controller)))
 
 router.get('/count-by-region', tryCatch(controller.getCountByRegion.bind(controller)))
+
+router.get('/top-wines', tryCatch(controller.getTopWines.bind(controller)))
+
+
+router.get('/countries', tryCatch(controller.getCountries.bind(controller)))
+router.get('/varieties', tryCatch(controller.getVarieties.bind(controller)))

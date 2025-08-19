@@ -60,26 +60,25 @@ export class WineController {
     // Get price vs points with optional filters.
     async getPriceVsPoints(req, res) {
 
-        const { country, variety, maxPrice, minPoints } = req.query
+        const { country, variety, maxPrice, minPoints } = req.query;
         const filter = {}
 
         if (country) filter.country = country
         if (variety) filter.variety = variety
-        if (maxPrice) filter.price = { $lte: Number(maxPrice) }
-        if (minPoints) filter.points = { $gte: Number(minPoints) }
+        if (maxPrice) filter.price = { $lte: Number(maxPrice), $gt: 0 }
+        else filter.price = { $gt: 0 }
+
+        if (minPoints) filter.points = { $gte: Number(minPoints), $ne: null }
+        else filter.points = { $ne: null }
 
         // Add check: price must exist and be > 0
         filter.price = { ...filter.price, $gt: 0 }
         filter.points = { ...filter.points, $ne: null }
 
         const result = await WineModel.find(
-            {
-                price: { $ne: null, ...filter.price },
-                points: { $ne: null, ...filter.points },
-                ...filter
-            },
+            filter,
             { price: 1, points: 1, country: 1, variety: 1, title: 1 }
-        ).limit(500) // Limit to 500 results for performance
+        ).limit(150) // Limit to 150 results for performance
 
         res.json(result)
 
@@ -111,6 +110,35 @@ export class WineController {
 
     }
 
+    async getTopWines(req, res) {
+
+        const variety = req.query.variety // optional
+        const limit = parseInt(req.query.limit) || 10
+
+        const matchStage = variety ? { $match: { variety: variety } } : { $match: {} }
+
+        const result = await WineModel.aggregate([
+            matchStage,
+            { $sort: { points: -1 } },   // sort by highest points
+            { $limit: limit },
+            {
+                $project: {
+                    _id: 0,
+                    title: 1,
+                    variety: 1,
+                    country: 1,
+                    points: 1,
+                    price: 1
+                }
+            }
+        ])
+
+        res.json(result)
+
+
+
+    }
+
     // Get wine count per region, filtered by country
     async getCountByRegion(req, res) {
         const { country } = req.query
@@ -134,5 +162,19 @@ export class WineController {
 
         res.json(response)
     }
+
+
+    //Helper for price vs points
+
+    async getCountries(req, res) {
+        const countries = await WineModel.distinct("country")
+        res.json(countries.filter(Boolean))
+    }
+
+    async getVarieties(req, res) {
+        const varieties = await WineModel.distinct("variety")
+        res.json(varieties.filter(Boolean))
+    }
+
 
 }
