@@ -10,7 +10,9 @@
     "clean": "node src/scripts/cleanWinedata.js",
     "embed": "node src/scripts/embedAndUpser.js",
     "seed": "node src/scripts/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint ./src || exit 0",
+    "lint:fix": "npx eslint ./src --fix || exit 0"
   },
   "author": "Ester Hugosson",
   "license": "MIT",
@@ -34,6 +36,7 @@
     "winston-mongodb": "^7.0.0"
   },
   "devDependencies": {
+    "@lnu/eslint-config": "^1.1.10",
     "nodemon": "^3.1.10"
   }
 }

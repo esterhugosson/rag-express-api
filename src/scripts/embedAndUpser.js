@@ -1,7 +1,15 @@
+/**
+ * @file Embeds wine descriptions using OpenAI and upserts them into Pinecone.
+ * @module scripts/embedAndUpser
+ * @author Ester Hugosson
+ * @version 1.0.0
+ */
+
 import fs from 'fs/promises'
 import dotenv from 'dotenv'
 import { OpenAI } from 'openai'
 import { Pinecone } from '@pinecone-database/pinecone'
+import { logger } from '../config/winston.js'
 
 dotenv.config()
 
@@ -17,24 +25,22 @@ const pc = new Pinecone({
 // Load index name from environment variable or default to 'wine-index'
 const indexName = process.env.PINECONE_INDEX_NAME || 'wine-index'
 
-
-
-
+// Number of items to process per batch
 const BATCH_SIZE = 10
 
+/**
+ * Embeds wine descriptions and upserts them into Pinecone in batches.
+ */
 async function embed() {
 
     //Create index if it doesn't exist
     const index = pc.index(indexName)
 
-    //await pc.waitUntilReady(indexName)
-
-
-
+    // Read cleaned wine data from file
     const raw = await fs.readFile('src/data/cleaned-wines.json', 'utf8')
     const wines = JSON.parse(raw)
 
-
+    // Process wines in batches
     for (let i = 0; i < wines.length; i += BATCH_SIZE) {
         const batch = wines.slice(i, i + BATCH_SIZE)
 
@@ -66,16 +72,18 @@ async function embed() {
             }
         }))
 
+        // Upsert batch into Pinecone index
         await index.upsert(vectors)
 
-        console.log(`Upserted batch ${i / BATCH_SIZE + 1} of ${Math.ceil(wines.length / BATCH_SIZE)}`)
+        logger.info(`Upserted batch ${i / BATCH_SIZE + 1} of ${Math.ceil(wines.length / BATCH_SIZE)}`)
 
     }
 
-    console.log('All wines embedded and upserted successfully!')
+    logger.info('All wines embedded and upserted successfully!')
 
 
 
 }
 
-embed().catch(console.error)
+// Run the embedding and upsert process
+embed().catch(logger.error)

@@ -1,9 +1,25 @@
+/**
+ * @file Cleans raw wine data and writes a filtered, normalized JSON file.
+ * @module scripts/cleanWinedata
+ * @author Ester Hugosson
+ * @version 1.0.0
+ */
+
 import fs from 'fs'
+import { logger } from '../config/winston.js'
 
-
+// Read raw wine data from file
 const rawData = fs.readFileSync('src/data/winemag-data-130k-v2.json', 'utf8')
+
+// Parse JSON data
 const rawWines = JSON.parse(rawData)
 
+/**
+ * Filters and normalizes wine data.
+ * - Only includes entries with description, points, country, and variety.
+ * - Limits to first 5000 entries.
+ * - Normalizes missing fields with defaults.
+ */
 const cleaned = rawWines
 .filter(w => w.description && w.points && w.country && w.variety)
 .slice(0, 5000)
@@ -23,6 +39,7 @@ const cleaned = rawWines
     taster_name: wine.taster_name || 'Unknown'
 }))
 
+// Write cleaned data to new file
 fs.writeFileSync('src/data/cleaned-wines.json', JSON.stringify(cleaned, null, 2))
 
-console.log(`Cleaned ${cleaned.length} wine entries and saved to cleaned-wines.json`);
+logger.info(`Cleaned ${cleaned.length} wine entries and saved to cleaned-wines.json`);

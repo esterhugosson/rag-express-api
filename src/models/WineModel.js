@@ -1,3 +1,11 @@
+/**
+ * @file Defines the Wine schema.
+ * @module models/baseSchema
+ * @author Ester Hugosson
+ * @version 1.0.0
+ */
+
+
 import mongoose from 'mongoose' 
 import { BASE_SCHEMA } from './baseSchema.js'   
 
