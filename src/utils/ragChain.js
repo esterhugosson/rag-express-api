@@ -64,7 +64,7 @@ export const queryPineconeVectorStoreAndQueryLLM = async (
             })
             .join("\n")
 
-        logger.info("GPT context preview:\n", concatenatedPageContent.slice(0, 1000))
+        logger.log("GPT context preview:\n", concatenatedPageContent.slice(0, 1000))
 
         // Invoke LLM chain with context and question
         const result = await chain.invoke({
@@ -72,7 +72,7 @@ export const queryPineconeVectorStoreAndQueryLLM = async (
             question: question,
         })
 
-        logger.info(result)
+        logger.log(result)
 
 
         //return answers and sources

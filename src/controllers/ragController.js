@@ -40,8 +40,11 @@ export class RagController {
         return res.status(400).json({ message: 'Question is required and must be a string' })
       }
 
+      console.log('The question is:', question)
+
       // Basic sanitization
       const sanitizedQuestion = question.trim().replace(/[\x00-\x1F\x7F]/g, '')
+      
       if (sanitizedQuestion.length === 0 || sanitizedQuestion.length > 500) {
         return res.status(400).json({ message: 'Question must be a non-empty string under 500 characters' })
       }
