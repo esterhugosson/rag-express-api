@@ -66,6 +66,7 @@ export const queryPineconeVectorStoreAndQueryLLM = async (
 
         logger.info("GPT context preview:\n", concatenatedPageContent.slice(0, 1000))
 
+        // Invoke LLM chain with context and question
         const result = await chain.invoke({
             input_documents: [new Document({ pageContent: concatenatedPageContent })],
             question: question,
@@ -74,12 +75,14 @@ export const queryPineconeVectorStoreAndQueryLLM = async (
         logger.info(result)
 
 
+        //return answers and sources
         return {
             answer: result.text,
             sources: queryResponse.matches.map(m => m.metadata.title || m.id),
         }
 
     } else {
+        //No matches found.
         return {
             answer: "Sorry, I couldn't find relevant wine reviews.",
             sources: [],
