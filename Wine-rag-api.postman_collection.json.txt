@@ -1,0 +1,386 @@
+{
+	"info": {
+		"_postman_id": "f8ed3ef1-12d0-45c1-90f9-bd37469b9307",
+		"name": "Wine-rag-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31753600"
+	},
+	"item": [
+		{
+			"name": "version 1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get average wine scores per country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response is an array\", () => {",
+							"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wines/avg-score-by-country",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wines",
+						"avg-score-by-country"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all wines with price vs points",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+							"pm.test(\"Response has price and points fields\", () => {",
+							"    const data = pm.response.json();",
+							"    if (data.length > 0) {",
+							"        pm.expect(data[0]).to.have.property(\"price\");",
+							"        pm.expect(data[0]).to.have.property(\"points\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wines/price-vs-points",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wines",
+						"price-vs-points"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the top N wine varieties by count",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+							"pm.test(\"Array length is <= 10\", () => {",
+							"    pm.expect(pm.response.json().length).to.be.at.most(10);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wines/top-varieties?limit=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wines",
+						"top-varieties"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Count of wines per region",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+							"pm.test(\"Response is array of objects with region and count\", () => {",
+							"    const data = pm.response.json();",
+							"    if (data.length > 0) {",
+							"        pm.expect(data[0]).to.have.all.keys(\"region\", \"count\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wines/count-by-region?country=Italy",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wines",
+						"count-by-region"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "Italy"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get top wines, filterable by variety",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+							"pm.test(\"Response array length <= 5\", () => {",
+							"    pm.expect(pm.response.json().length).to.be.at.most(5);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wines/top-wines?variety=Merlot&limit=5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wines",
+						"top-wines"
+					],
+					"query": [
+						{
+							"key": "variety",
+							"value": "Merlot"
+						},
+						{
+							"key": "limit",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ask a wine-related question to the chatbot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+							"pm.test(\"Response contains answer and sources\", () => {",
+							"    const data = pm.response.json();",
+							"    pm.expect(data).to.have.property(\"answer\");",
+							"    pm.expect(data).to.have.property(\"sources\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"question\": \"Is there a wine tasting like red dry fruits?\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/rag/query",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"rag",
+						"query"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all countries in dataset",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+							"pm.test(\"Response is array\", () => {",
+							"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wines/countries",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wines",
+						"countries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of all wine varieties",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+							"pm.test(\"Response is array\", () => {",
+							"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wines/varieties",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wines",
+						"varieties"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://cscloud7-102.lnu.se/wines-api"
+		}
+	]
+}
