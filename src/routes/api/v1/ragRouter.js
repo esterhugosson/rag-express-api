@@ -12,4 +12,4 @@ import { RagController } from '../../../controllers/ragController.js'
 export const router = express.Router()
 const controller = new RagController()
 
-router.post('/query', controller.query)
+ragRouter.post('/query', ragLimiter, dailyBudget, tryCatch(controller.query))
