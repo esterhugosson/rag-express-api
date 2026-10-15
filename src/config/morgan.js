@@ -1,7 +1,7 @@
 /**
  * @file Defines the Morgan logger.
  * @module config/morgan
- * @author Mats Loock
+ * @author Ester Hugosson
  * @version 1.0.0
  */
 
