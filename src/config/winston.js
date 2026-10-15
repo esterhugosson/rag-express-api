@@ -1,7 +1,7 @@
 /**
  * @file Defines the Winston logger.
  * @module config/winston
- * @author Mats Loock
+ * @author Ester Hugosson
  * @version 1.0.0
  */
 
