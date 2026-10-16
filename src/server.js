@@ -5,15 +5,13 @@
  * @version 1.0.0
  */
 
-import dotenv from "dotenv";
-dotenv.config();
-
+import 'dotenv/config'
 import httpContext from "express-http-context"; // Must be first!
 import express from "express";
 import "@lnu/json-js-cycle";
 import cors from "cors";
 import helmet from "helmet";
-import { generalLimiter } from "./middleware/rateLimits.js";
+import { generalLimiter } from "./middleware/rateLimit.js";
 import { randomUUID } from "node:crypto";
 import http from "node:http";
 import { connectToDatabase } from "./config/mongoose.js";
