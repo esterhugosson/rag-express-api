@@ -29,17 +29,11 @@ try {
   app.use(helmet());
 
   // Enable Cross Origin Resource Sharing (CORS) (https://www.npmjs.com/package/cors).
-  const allowedOrigins = (process.env.CORS_ORIGINS ?? "")
-    .split(",")
-    .filter(Boolean);
-  app.use(
-    cors({
-      origin: allowedOrigins,
-      methods: ["GET", "POST"],
-      exposedHeaders: ["X-Demo-Remaining"],
-    }),
-  );
-
+  const allowedOrigins = (process.env.CORS_ORIGINS ?? '')
+  .split(',')
+  .map((o) => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean)
+  
   // Set the base URL to use for all relative URLs in a document.
   const baseURL = process.env.BASE_Url || "/";
 
