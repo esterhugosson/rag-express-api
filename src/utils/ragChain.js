@@ -16,7 +16,7 @@ const index = pinecone.index(process.env.PINECONE_INDEX_NAME || 'wine-index')
 const embeddings = new OpenAIEmbeddings({ model: 'text-embedding-3-small' })
 
 const llm = new ChatOpenAI({
-    model: 'gpt-4-mini',
+    model: 'gpt-4o-mini',
     temperature: 0.3,
     maxTokens: 400,
     timeout: 20_000,
@@ -44,7 +44,7 @@ export const queryWineRag = async (question) => {
 
     const context = matches
         .map((m,i) => {
-            const md = m.includeMetadata
+            const md = m.metadata ?? {}
             return `[${i + 1}] ${md.title} | ${md.variety} | ${md.country} | ${md.points} pts | $${md.price}\n${(md.description ?? '').slice(0, 400)}`
         })
         .join('\n\n')

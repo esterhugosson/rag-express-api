@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import 'dotenv/config'
+import "dotenv/config";
 import httpContext from "express-http-context"; // Must be first!
 import express from "express";
 import "@lnu/json-js-cycle";
@@ -26,12 +26,6 @@ try {
   // Create an Express application.
   const app = express();
 
-  // Set the base URL to use for all relative URLs in a document.
-  const baseURL = process.env.BASE_Url || "/";
-
-  //Required for render
-  app.set("trust proxy", 1);
-
   app.use(helmet());
 
   // Enable Cross Origin Resource Sharing (CORS) (https://www.npmjs.com/package/cors).
@@ -46,13 +40,19 @@ try {
     }),
   );
 
-  // Parse requests of the content type application/json.
-  app.use(express.json({ limit: '10kb' }))
-  
-  // Health check: before the rate limiter, so Render's pings never count
-  app.get('/health', (req, res) => res.json({ status: 'ok' }))
+  // Set the base URL to use for all relative URLs in a document.
+  const baseURL = process.env.BASE_Url || "/";
 
-  app.use(generalLimiter)
+  //Required for render
+  app.set("trust proxy", 1);
+
+  // Health check: before the rate limiter, so Render's pings never count
+  app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+  app.use(generalLimiter);
+
+  // Parse requests of the content type application/json.
+  app.use(express.json({ limit: "10kb" }));
 
   // Add the request-scoped context.
   app.use(httpContext.middleware);
@@ -78,22 +78,11 @@ try {
     logger.error(err.message, { error: err });
 
     if (process.env.NODE_ENV === "production") {
-      // Ensure a valid status code is set for the error.
-      // If the status code is not provided, default to 500 (Internal Server Error).
-      // This prevents leakage of sensitive error details to the client.
-      if (!err.status) {
-        err.status = 500;
-        err.message = http.STATUS_CODES[err.status];
-      }
-
-      // Send only the error message and status code to prevent leakage of
-      // sensitive information.
-      res.status(err.status).json({
-        status: err.status,
-        message: err.message,
+      const status = err.status && err.status < 500 ? err.status : 500;
+      return res.status(status).json({
+        status,
+        message: status < 500 ? err.message : http.STATUS_CODES[500],
       });
-
-      return;
     }
 
     // ---------------------------------------------------
@@ -114,12 +103,16 @@ try {
 
   // Starts the HTTP server listening for connections.
   const server = app.listen(process.env.PORT, () => {
-    logger.info(
-      `Server running at http://localhost:${server.address().port}${baseURL}`,
-    );
-    logger.info("Press Ctrl-C to terminate...");
+    logger.info(`Server running on port ${server.address().port}`)
+  });
+
+  // Graceful shutdown: Render sends SIGTERM on every deploy/restart
+  process.on("SIGTERM", () => {
+    logger.info("SIGTERM received, shutting down gracefully");
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(1), 10_000).unref()
   });
 } catch (err) {
   logger.error(err.message, { error: err });
-  process.exitCode = 1;
+  process.exit(1);
 }
